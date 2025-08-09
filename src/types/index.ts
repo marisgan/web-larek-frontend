@@ -9,23 +9,15 @@ export interface IItem {
     price: number | null;
   }
 
-export interface ICatalog {
-    items: IItem[];
-    preview: IItem;
-    setItems(items: IItem[]): void;
-    getItems(): IItem[];
-    setItemPreview(item: IItem): void;
-    getItemPreview(): IItem;
-}
 
-export interface ICart {
+export interface IBasket {
     items: IItem[];
     addItem(item: IItem): void;
-    deleteItem(id: TItemId): void;
+    removeItem(id: TItemId): void;
     getItems(): IItem[];
     getCount(): number;
     getTotal(): number;
-    isInCart(id: TItemId): boolean;
+    contains(id: TItemId): boolean;
     getOrder(): IOrder;
 }
 
@@ -76,3 +68,4 @@ export type TCardCatalog = Pick<IItem, 'category' | 'title' | 'image' | 'price'>
 
 // Карточка товара в модальном окне
 export type TCardModal = Pick<IItem, 'category' | 'title' | 'description' | 'price'>;
+
