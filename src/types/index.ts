@@ -10,17 +10,6 @@ export interface IItem {
   }
 
 
-export interface IBasket {
-    items: IItem[];
-    addItem(item: IItem): void;
-    removeItem(id: TItemId): void;
-    getItems(): IItem[];
-    getCount(): number;
-    getTotal(): number;
-    contains(id: TItemId): boolean;
-    getOrder(): IOrder;
-}
-
 export interface ICustomer {
     payment: 'card' | 'cash' | '';
     email: string;
@@ -36,10 +25,10 @@ export type TCustomerInfo = Pick<ICustomer, 'payment' | 'email' | 'phone' | 'add
 
 export type TItemId = Pick<IItem, 'id'>;
 
-export interface IOrder extends TCustomerInfo {
-    total: number;
-    items: TItemId[]
-}
+// export interface IOrder extends TCustomerInfo {
+//     total: number;
+//     items: TItemId[]
+// }
 
 
 // Views Layer

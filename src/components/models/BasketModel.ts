@@ -1,23 +1,30 @@
-import { IBasket, IItem} from '../../types'
 import { IEvents } from '../base/events'
+import { IItem } from '../../types';
 
-// export interface IBasket {
-//     items: IItem[];
-//     addItem(item: IItem): void;
-//     removeItem(id: TItemId): void;
-//     getItems(): IItem[];
-//     getCount(): number;
-//     getTotal(): number;
-//     contains(id: TItemId): boolean;
-// }
+export interface IOrderInfo {
+    items: string[];
+    total: number;
+}
 
-export class BasketModel {
-    protected items: Map<string, IItem> = new Map()
+export interface IBasketModel {
+    addItem(item: IItem): void;
+    removeItem(id: string): void;
+    getItems(): IItem[];
+    getCount(): number;
+    getTotal(): number;
+    contains(id: string): boolean;
+    clearBasket(): void;
+    getOrderInfo(): IOrderInfo;
+}
+
+export class BasketModel implements IBasketModel {
+
+    protected items: Map<string, IItem> = new Map();
 
     constructor(protected events: IEvents) {}
 
     addItem(item: IItem) {
-        this.items.set(item.id, item);
+        this.items.set(item.id, item)
         this.events.emit('basket:changed');
     }
 
@@ -36,10 +43,24 @@ export class BasketModel {
     }
 
     getTotal(): number {
-        return Array.from(this.items.values()).reduce((res, item) => res + item.price, 0);
+        return Array.from(
+            this.items.values()
+        ).reduce((res, item) => res + item.price, 0);
     }
 
-    contains(id: string): Boolean {
+    contains(id: string): boolean {
         return this.items.has(id);
+    }
+
+    clearBasket() {
+        this.items.clear();
+        this.events.emit('basket:changed')
+    }
+
+    getOrderInfo(): IOrderInfo {
+        return {
+            items: this.getItems().map(item => item.id),
+            total: this.getTotal()
+        }
     }
 }

@@ -1,22 +1,27 @@
-import { ensureElement } from "../../utils/utils";
+import { createElement, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
-interface IBasketView {
+export interface IBasketView {
     basketList: HTMLElement[];
     basketTotal: number;
+    basketButtonState: boolean;
+    basketEmpty: boolean;
 }
 
 export class BasketView extends Component<IBasketView> {
     protected basketListElement: HTMLElement;
-    protected basketButton: HTMLButtonElement;
+    protected basketButtonElement: HTMLButtonElement;
     protected basketTotalElement: HTMLElement;
+    private emptyElement = createElement('span', {textContent: 'Корзина пуста'});
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
         this.basketListElement = ensureElement('.basket__list', this.container);
-        this.basketButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
         this.basketTotalElement = ensureElement('.basket__price', this.container);
+        this.basketButtonElement = ensureElement<HTMLButtonElement>('.basket__button', this.container);
+
+        this.basketButtonElement.addEventListener('click', () => this.events.emit('order:start'));
     }
 
     set basketList(cards: HTMLElement[]) {
@@ -25,5 +30,15 @@ export class BasketView extends Component<IBasketView> {
 
     set basketTotal(value: number) {
         this.setText(this.basketTotalElement, String(value) + ' синапсов');
+    }
+
+    set basketButtonState(state: boolean) {
+        this.setDisabled(this.basketButtonElement, !state);
+    }
+
+    set basketEmpty(state: boolean) {
+        if (state) {
+            this.basketListElement.replaceChildren(this.emptyElement);
+        }
     }
 }

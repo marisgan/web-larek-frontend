@@ -1,36 +1,39 @@
 import { IItem} from '../../types/index'
 import { IEvents } from '../base/events';
 
-export interface ICatalog {
-    // items: IItem[];
-    // preview: IItem | null;
+interface ICatalogModel {
     setItems(items: IItem[]): void;
     getItems(): IItem[];
-    // setItemPreview(item: IItem): void;
-    // getItemPreview(): IItem;
+    getItem(id: string): IItem;
+    setPreview(id: string): void;
+    getPreview(id: string): IItem;
 }
 
-export class CatalogModel implements ICatalog {
-    protected items: IItem[] = [];
-    protected preview: IItem | null = null;
+export class CatalogModel implements ICatalogModel {
+    protected items: Map<string, IItem> = new Map();
+    protected preview: string | null = null;
 
     constructor(protected events: IEvents) {}
 
     setItems(items: IItem[]): void {
-        this.items = items;
+        items.forEach(item => this.items.set(item.id, item));
         this.events.emit('catalog:changed');
     }
 
     getItems(): IItem[] {
-        return this.items;
+        return Array.from(this.items.values());
     }
 
     getItem(id: string): IItem {
-        return this.items.filter(item => item.id === id)[0]
+        return this.items.get(id);
     }
 
-    setItemPreview(id: string) {
-        this.preview = this.items.filter(item => item.id === id)[0];
-        this.events.emit('preview:changed', {previewItem: this.preview});
+    setPreview(id: string) {
+        this.preview = id;
+        this.events.emit('preview:changed');
+    }
+
+    getPreview() {
+        return this.getItem(this.preview);
     }
 }

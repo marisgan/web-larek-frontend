@@ -1,6 +1,7 @@
 @use "variables" as *;
 @use "mixins";
 
+
 .card {
   @include mixins.flex(column);
   border: 0;

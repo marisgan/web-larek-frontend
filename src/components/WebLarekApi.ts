@@ -14,13 +14,4 @@ export class WebLarekApi extends Api {
                 item => ({...item, image: this.cdn + item.image})
             ))
     }
-
-    // getItems(): Promise<IItem[]> {
-	// 	return this.get('/product').then((data: ApiListResponse<IItem>) =>
-	// 		data.items.map((item) => ({
-	// 			...item,
-	// 			image: this.cdn + item.image,
-	// 		}))
-	// 	);
-	// }
 }
