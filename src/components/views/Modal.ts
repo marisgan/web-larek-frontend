@@ -1,10 +1,8 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
+import { IModal } from "../../types";
 
-export interface IModal {
-    content: HTMLElement;
-}
 
 export class Modal extends Component<IModal> {
     protected contentElement: HTMLElement;

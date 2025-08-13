@@ -1,10 +1,9 @@
 import { Component } from '../base/Component'
 import { IEvents } from '../base/events'
 import { ensureElement } from '../../utils/utils';
+import { IHeader } from '../../types';
 
-interface IHeader {
-    counter: number;
-}
+
 
 export class Header extends Component<IHeader> {
     protected container: HTMLElement;

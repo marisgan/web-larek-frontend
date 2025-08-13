@@ -4,18 +4,17 @@ import { WebLarekApi } from './components/WebLarekApi';
 import { EventEmitter } from './components/base/events';
 import { CatalogModel } from './components/models/CatalogModel';
 import { BasketModel } from './components/models/BasketModel';
-import { Card, IBuyButton } from './components/views/Card';
-import { cloneTemplate, createElement } from './utils/utils';
+import { Card } from './components/views/Card';
+import { IBuyButton, IBasketView, IUserInfo, IForm } from './types';
+import { cloneTemplate } from './utils/utils';
 import { CatalogView} from './components/views/CatalogView';
 import { Header } from './components/views/Header';
-import { IItem } from './types';
-import { IModal, Modal } from './components/views/Modal';
-import { BasketView, IBasketView } from './components/views/BasketView';
+import { Modal } from './components/views/Modal';
+import { BasketView } from './components/views/BasketView';
 import { buyButtonSettings } from './utils/constants';
-import { UserModel, TPaymentMethod, IUserInfo } from './components/models/UserModel';
-import { IOrderForm, OrderForm } from './components/views/OrderForm';
+import { UserModel } from './components/models/UserModel';
+import { Form } from './components/views/Form';
 import { Success } from './components/views/Success';
-import { ContactsForm, IContactsForm } from './components/views/ContactsForm';
 
 
 const api = new WebLarekApi(API_URL, CDN_URL);
@@ -41,8 +40,8 @@ const catalogView = new CatalogView(catalogContainer, events);
 const header = new Header(headerContainer, events);
 const modal = new Modal(modalContainer, events);
 const basketView = new BasketView(cloneTemplate(basketTemplate), events);
-const orderForm = new OrderForm(cloneTemplate(orderFormTemplate), events);
-const contactsForm = new ContactsForm(cloneTemplate(contactsFormTemplate), events);
+const orderForm = new Form(cloneTemplate(orderFormTemplate), events);
+const contactsForm = new Form(cloneTemplate(contactsFormTemplate), events);
 const success = new Success(cloneTemplate(successTemplate), events);
 
 api.getItems()
@@ -89,7 +88,7 @@ events.on('modal:close', () => {
 })
 
 events.on('item:buy', ({id}: {id: string}) => {
-    basketModel.addItem(catalogModel.getItem(id));
+    basketModel.addItem(id);
     modal.close();
 })
 
@@ -98,19 +97,19 @@ events.on('item:remove', ({id}: {id: string}) => {
 })
 
 events.on('basket:open', () => {
-    const basketItems = basketModel.getItems();
-    const basketTotalValue = basketModel.getTotal();
+    const basketItemsIds = basketModel.getItems();
+    const basketTotalValue = catalogModel.getTotal(basketItemsIds);
 
-    const basketCardsList = basketItems.map(
-        (item, indexVal) => new Card(
+    const basketCardsList = basketItemsIds.map(
+        (id, indexVal) => new Card(
             cloneTemplate(cardBasketTemplate), events
-        ).render({...item, index: indexVal + 1}));
+        ).render({...catalogModel.getItem(id), index: indexVal + 1}));
 
     let basketObj: IBasketView = {
         basketList: basketCardsList,
         basketTotal: basketTotalValue,
         basketButtonState: !(basketTotalValue === 0),
-        basketEmpty: basketItems.length === 0
+        basketEmpty: basketModel.getCount() === 0
     }
 
     modal.render({content: basketView.render(basketObj)});
@@ -119,7 +118,7 @@ events.on('basket:open', () => {
 
 events.on('order:start', () => {
     modal.render({content: orderForm.render({
-        altButton: null,
+        payment: null,
         submitState: false,
         error: ''
     })});
@@ -127,34 +126,33 @@ events.on('order:start', () => {
 
 events.on('payment:input', (data: Partial<IUserInfo>) => {
     userModel.setUserInfo(data);
-    orderForm.render({altButton: data.payment});
+    orderForm.render({payment: data.payment});
 });
 
-events.on('address:input', (data: Partial<IUserInfo>) => {
+events.on('order:input', (data: Partial<IUserInfo>) => {
     userModel.setUserInfo(data);
 });
 
 events.on('contacts:input', (data: Partial<IUserInfo>) => {
     userModel.setUserInfo(data);
-    console.log(userModel);
 })
 
-events.on('error:changed', (data: IOrderForm) => {
+events.on('order:error', (data: Partial<IForm>) => {
     orderForm.render(data);
 })
 
-events.on('errorContacts:changed', (data: IContactsForm) => {
+events.on('contacts:error', (data: Partial<IForm>) => {
     contactsForm.render(data);
-    console.log('errorContacts:changed EVENT');
-    console.log(data);
 })
+
 
 events.on('order:ready', (data: IUserInfo) => {
     orderForm.render({
-        altButton: data.payment,
+        ...data,
         submitState: true,
         error: ''
     })
+    contactsForm.render({error: ''})
 })
 
 events.on('order:submit', () => {
@@ -169,22 +167,25 @@ events.on('contacts:change', (data: Partial<IUserInfo>) => {
 })
 
 events.on('contacts:ready', (data: IUserInfo) => {
-    contactsForm.render({submitState: true, error: ''});
+    contactsForm.render({...data, submitState: true, error: ''});
 })
 
 events.on('contacts:submit', () => {
-    const finalOrder = Object.assign(userModel.getUserInfo(), basketModel.getOrderInfo());
-    console.log(finalOrder);
-    modal.render({content: success.render({
-        total: finalOrder.total
-    })})
-    basketModel.clearBasket();
+    const basketItemsIds = basketModel.getItems();
+    const orderInfo = {items: basketItemsIds, total: catalogModel.getTotal(basketItemsIds)};
+    const finalOrder = Object.assign(orderInfo, userModel.getUserInfo());
+
+    api.postOrder(finalOrder)
+        .then(res => {
+            modal.render({content: success.render({total: res.total})});
+            basketModel.clearBasket();
+            userModel.clearUserInfo();
+            orderForm.clearForm();
+            contactsForm.clearForm();
+        })
+        .catch(err => console.log(err))
 })
 
 events.on('success:close', () => {
     modal.close();
-    basketModel.clearBasket();
-    userModel.clearUserInfo();
-    orderForm.clearForm();
-    contactsForm.clearForm();
 })

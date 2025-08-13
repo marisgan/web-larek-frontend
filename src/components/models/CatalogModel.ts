@@ -1,13 +1,8 @@
 import { IItem} from '../../types/index'
 import { IEvents } from '../base/events';
+import { ICatalogModel } from '../../types/index';
 
-interface ICatalogModel {
-    setItems(items: IItem[]): void;
-    getItems(): IItem[];
-    getItem(id: string): IItem;
-    setPreview(id: string): void;
-    getPreview(id: string): IItem;
-}
+
 
 export class CatalogModel implements ICatalogModel {
     protected items: Map<string, IItem> = new Map();
@@ -33,7 +28,11 @@ export class CatalogModel implements ICatalogModel {
         this.events.emit('preview:changed');
     }
 
-    getPreview() {
+    getPreview(): IItem {
         return this.getItem(this.preview);
+    }
+
+    getTotal(itemsIds: string[]) {
+        return itemsIds.reduce((res, id) => res + this.getItem(id).price, 0);
     }
 }

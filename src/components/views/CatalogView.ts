@@ -1,10 +1,7 @@
 import { Component } from '../base/Component'
 import { IEvents } from '../base/events'
-import { ensureElement } from '../../utils/utils';
+import { ICatalogView } from '../../types';
 
-interface ICatalogView {
-    cardsList: HTMLElement[];
-}
 
 export class CatalogView extends Component<ICatalogView> {
 

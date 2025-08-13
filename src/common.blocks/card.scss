@@ -42,6 +42,7 @@
   }
 
   &__image {
+    object-fit: contain;
     height: 390px;
     aspect-ratio: 1;
     margin: 3.75rem;

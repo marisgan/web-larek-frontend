@@ -1,17 +1,8 @@
 import { Component } from "../base/Component";
-import { IItem } from '../../types'
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
+import { ICard, IBuyButton } from "../../types";
 
-export interface IBuyButton {
-    text: string;
-    status: string;
-}
-
-interface ICard extends IItem {
-    index: number;
-    buyButton: IBuyButton;
-}
 
 export class Card extends Component<ICard> {
     protected titleElement: HTMLElement;
@@ -68,6 +59,7 @@ export class Card extends Component<ICard> {
     set image(url: string){
         if (!this.imageElement) return
         const alt = 'Изображение ' + (this.titleElement?.textContent ?? '');
+        url = url.replace('svg', 'png');
         this.setImage(this.imageElement, url, alt);
     }
 

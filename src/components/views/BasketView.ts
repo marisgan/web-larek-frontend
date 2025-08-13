@@ -1,13 +1,8 @@
 import { createElement, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
+import { IBasketView } from "../../types";
 
-export interface IBasketView {
-    basketList: HTMLElement[];
-    basketTotal: number;
-    basketButtonState: boolean;
-    basketEmpty: boolean;
-}
 
 export class BasketView extends Component<IBasketView> {
     protected basketListElement: HTMLElement;
