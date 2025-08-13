@@ -130,7 +130,7 @@ interface IUserInfo {
 Имплементирует интерфейс ICatalogModel.\
 Конструктор класса принимает инстанс брокера событий.\
 В полях класса хранятся следующие данные:
-- items: IItem[] - массив объектов товаров
+- items: Map<string, IItem> - объект Map, который хранит ключ - id товара, значение - объект товара
 - preview: id - id товара, выбранного для просмотра в модальном окне
 - events: IEvents - экземпляр класса `EventEmitter` вызывает события при изменении данных.
 
@@ -145,7 +145,7 @@ interface IUserInfo {
 Класс отвечает за хранение списка вабранных товаров и логику работы с корзиной товаров. Имплементирует интерфейс IBasketModel.
 Конструктор класса принимает инстанс брокера событий.\
 В полях класса хранятся следующие данные:
-- protected items: Set\<string> - сет товаров, положенных в корзину
+- items: Set\<string> - сет из id товаров, положенных в корзину
 - events: IEvents - экземпляр класса `EventEmitter` вызывает события при изменении данных.
 Методы класса:
 - addItem(id: string): void - добавить товар в корзину
@@ -158,11 +158,11 @@ interface IUserInfo {
 #### Класс UserModel
 для хранения и валидации информации о покупателе.
 Поля:
-- protected userInfo: IUserInfo - объект с полями способа оплаты, адреса, email, телефон - для удобной валидации и сохранения данных
+- userInfo: IUserInfo - объект с полями способа оплаты, адреса, email, телефон - для удобной валидации и сохранения данных
 Методы:
 - getUserInfo(): IUserInfo - возвращает данные пользователя
 - setUserInfo(data: Partial<IUserInfo>): void - устанавливает данные пользователя
-- private validateAndEmit(user: IUserInfo): void - валидирует поля и инициирует события для управления формой и показом ошибок валидации. Вызывается только внутри модели при установке данных.
+- validateAndEmit(user: IUserInfo): void - валидирует поля и инициирует события для управления формой и показом ошибок валидации. Вызывается только внутри модели при установке данных.
 - clearUserInfo(): void - очищает объект с данными пользователя
 
 
@@ -194,8 +194,8 @@ interface IUserInfo {
 
 Поля класса:
 
-- protected contentElement: HTMLElement;
-- protected closeButton: HTMLButtonElement;
+- contentElement: HTMLElement;
+- closeButton: HTMLButtonElement;
 
 Сеттер для контента:
 - set content(element: HTMLElement)
@@ -205,12 +205,12 @@ interface IUserInfo {
 Реализует универсальный объект формы, при создании принимает элемент формы и брокер событий. В конструкторе устанавливаются слушатели на ввод, нажатие кнопок и сабмит формы.
 
 Поля:
-- protected container: HTMLElement
-- protected events: IEvents
-- protected submitButton: HTMLButtonElement;
-- protected errorElement: HTMLElement;
-- protected inputs: HTMLInputElement[];
-- protected altButtons: HTMLButtonElement[] | null = null;
+- container: HTMLElement
+- events: IEvents
+- submitButton: HTMLButtonElement;
+- errorElement: HTMLElement;
+- inputs: HTMLInputElement[];
+- altButtons: HTMLButtonElement[] | null = null;
 
 Методы:
 - set submitState(state: boolean) - устанавливает активность кнопки сабмита
