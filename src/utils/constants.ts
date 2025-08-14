@@ -1,8 +1,14 @@
 import { IEvents } from "../components/base/events";
 import { IUserInfo } from "../types";
 
-export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
-export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
+export const API_ORIGIN = 'https://larek-api.nomoreparties.co'
+
+// export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
+// export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
+
+export const API_URL = `${API_ORIGIN}/api/weblarek`;
+export const CDN_URL = `${API_ORIGIN}/content/weblarek`;
+
 
 export const CATEGORY: Record<string, string> = {
   'другое': 'card__category_other',
