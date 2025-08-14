@@ -1,3 +1,4 @@
+import { CATEGORY } from "../../utils/constants";
 import { Component } from "../base/Component";
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
@@ -53,7 +54,9 @@ export class Card extends Component<ICard> {
 
     set category(value: string){
         if (!this.categoryElement) return
-        this.setText(this.categoryElement, value)
+        this.setText(this.categoryElement, value);
+        const color = CATEGORY[value] || CATEGORY.default;
+        this.categoryElement.className = 'card__category ' + color;
     }
 
     set image(url: string){

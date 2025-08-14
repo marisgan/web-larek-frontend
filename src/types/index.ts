@@ -27,8 +27,10 @@ export interface IItem {
     getTotal(itemsIds: string[]): number;
 }
 
+export type PaymentMethod = 'card' | 'cash' | '';
+
 export interface IUserInfo {
-    payment: string;
+    payment: PaymentMethod;
     address: string;
     email: string;
     phone: string;

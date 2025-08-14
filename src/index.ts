@@ -162,10 +162,6 @@ events.on('order:submit', () => {
     })})
 })
 
-events.on('contacts:change', (data: Partial<IUserInfo>) => {
-    userModel.setUserInfo(data);
-})
-
 events.on('contacts:ready', (data: IUserInfo) => {
     contactsForm.render({...data, submitState: true, error: ''});
 })
